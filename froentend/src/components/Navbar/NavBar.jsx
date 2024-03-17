@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./NavBar.css";
 import { assets } from "../../assets/assets";
 import { MdOutlineFoodBank } from "react-icons/md";
+import { Link } from "react-router-dom";
 const NavBar = () => {
   const [menu, setMenu] = useState("menu");
   return (
@@ -14,30 +15,34 @@ const NavBar = () => {
         &nbsp; Yumf
       </a>
       <ul className="navbar-menu">
-        <li
+        <Link
+          to="/"
           onClick={() => setMenu("home")}
           className={menu === "home" ? "active" : ""}
         >
           home
-        </li>
-        <li
+        </Link>
+        <a
+          href="#explore-menu"
           onClick={() => setMenu("menu")}
           className={menu === "menu" ? "active" : ""}
         >
           menu
-        </li>
-        <li
+        </a>
+        <a
+          href="#app-download"
           onClick={() => setMenu("mobile-app")}
           className={menu === "mobile-app" ? "active" : ""}
         >
           mobile-app
-        </li>
-        <li
+        </a>
+        <a
+          href="#footer"
           onClick={() => setMenu("contact us")}
           className={menu === "contact us" ? "active" : ""}
         >
           contact us
-        </li>
+        </a>
       </ul>
       <div className="navbar-right">
         <img src={assets.search_icon}></img>
