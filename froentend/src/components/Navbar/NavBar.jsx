@@ -1,19 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./NavBar.css";
 import { assets } from "../../assets/assets";
 import { MdOutlineFoodBank } from "react-icons/md";
 import { Link } from "react-router-dom";
-const NavBar = () => {
-  const [menu, setMenu] = useState("menu");
+import { StoreContext } from "../../context/StoreContext";
+const NavBar = ({ setshowLogin }) => {
+  const [menu, setMenu] = useState("home");
+  const { getTotalCartAmount } = useContext(StoreContext);
   return (
     <div className="navbar">
-      <a className="logo">
-        <MdOutlineFoodBank
-          color="#2bc5b4"
-          style={{ fontSize: "26px", fontWeight: "bolder" }}
-        />
-        &nbsp; Yumf
-      </a>
+      {" "}
+      <Link to="/">
+        <a className="logo">
+          {" "}
+          <MdOutlineFoodBank
+            color="#2bc5b4"
+            style={{ fontSize: "26px", fontWeight: "bolder" }}
+          />
+          &nbsp; Yumf
+        </a>
+      </Link>
       <ul className="navbar-menu">
         <Link
           to="/"
@@ -47,10 +53,12 @@ const NavBar = () => {
       <div className="navbar-right">
         <img src={assets.search_icon}></img>
         <div className="navbar-search-icon">
-          <img src={assets.basket_icon}></img>
-          <div className="dot"></div>
+          <Link to="/cart">
+            <img src={assets.basket_icon}></img>
+          </Link>
+          <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
         </div>
-        <button>signin</button>
+        <button onClick={() => setshowLogin(true)}>signin</button>
       </div>
     </div>
   );
