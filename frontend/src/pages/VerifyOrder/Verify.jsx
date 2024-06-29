@@ -1,7 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import "./Verify.css";
 import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
 
 const Verify = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -10,13 +9,24 @@ const Verify = () => {
   const { url } = useContext(StoreContext);
 
   const verifyPayment = async () => {
-    const response = await axios.post(url + "/api/order/verify", {
-      success,
-      orderId,
-    });
-    if (response.data.success) {
-      window.location.href = "/myorders";
-    } else {
+    try {
+      const response = await fetch(url + "/api/order/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ success, orderId }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        window.location.href = "/myorders";
+      } else {
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error);
       window.location.href = "/";
     }
   };
