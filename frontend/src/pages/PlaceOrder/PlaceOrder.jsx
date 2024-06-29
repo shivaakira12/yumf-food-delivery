@@ -1,8 +1,8 @@
+import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import "./PlaceOrder.css";
-
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItems, url } =
     useContext(StoreContext);
@@ -39,25 +39,14 @@ const PlaceOrder = () => {
       items: orderItems,
       amount: getTotalCartAmount() + 2,
     };
-
-    try {
-      const response = await fetch(url + "/api/order/place", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          token: token,
-        },
-        body: JSON.stringify(orderData),
-      });
-      const responseData = await response.json();
-      if (responseData.success) {
-        const { session_url } = responseData;
-        window.location.replace(session_url);
-      } else {
-        alert("Error");
-      }
-    } catch (error) {
-      console.error("Error placing order:", error);
+    let response = await axios.post(url + "/api/order/place", orderData, {
+      headers: { token },
+    });
+    if (response.data.success) {
+      const { session_url } = response.data;
+      window.location.replace(session_url);
+    } else {
+      alert("Error");
     }
   };
 
@@ -69,7 +58,6 @@ const PlaceOrder = () => {
       navigate("/cart");
     }
   }, [token]);
-
   return (
     <form className="place-order" onSubmit={placeOrder}>
       <div className="place-order-left">
