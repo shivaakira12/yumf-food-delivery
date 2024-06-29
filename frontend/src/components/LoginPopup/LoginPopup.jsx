@@ -3,6 +3,7 @@ import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 import "./LoginPopup.css";
+
 const LoginPopup = ({ setshowLogin }) => {
   const { url, setToken } = useContext(StoreContext);
   const [currState, setCurrState] = useState("Sign Up");
@@ -23,9 +24,14 @@ const LoginPopup = ({ setshowLogin }) => {
 
     const response = await axios.post(newUrl, data);
     if (response.data.success) {
-      setToken(response.data.token);
-      localStorage.setItem("token", response.data.token);
-      setshowLogin(false);
+      if (currState === "Login") {
+        setToken(response.data.token);
+        localStorage.setItem("token", response.data.token);
+        setshowLogin(false);
+      } else {
+        setCurrState("Login");
+        alert("Registration successful! Please log in.");
+      }
     } else {
       alert(response.data.message);
     }
@@ -36,9 +42,11 @@ const LoginPopup = ({ setshowLogin }) => {
     const value = event.target.value;
     setData((data) => ({ ...data, [name]: value }));
   };
+
   useEffect(() => {
     console.log(data);
   }, [data]);
+
   return (
     <div className="login-popup">
       <form onSubmit={onLogin} className="login-popup-container">
@@ -47,6 +55,7 @@ const LoginPopup = ({ setshowLogin }) => {
           <img
             src={assets.cross_icon}
             onClick={() => setshowLogin(false)}
+            alt="Close"
           ></img>
         </div>
         <div className="login-popup-inputs">
