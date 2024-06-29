@@ -1,27 +1,26 @@
-import React, { useEffect } from "react";
-import { useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import "./Verify.css";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
+
 const Verify = () => {
-  const [searchParams] = useSearchParams();
-  const success = searchParams.get("success");
-  const orderId = searchParams.get("orderId");
-  console.log(success, orderId);
+  const urlParams = new URLSearchParams(window.location.search);
+  const success = urlParams.get("success");
+  const orderId = urlParams.get("orderId");
   const { url } = useContext(StoreContext);
-  const navigate = useNavigate();
+
   const verifyPayment = async () => {
     const response = await axios.post(url + "/api/order/verify", {
       success,
       orderId,
     });
     if (response.data.success) {
-      navigate("/myorders");
+      window.location.href = "/myorders";
     } else {
-      navigate("/");
+      window.location.href = "/";
     }
   };
+
   useEffect(() => {
     verifyPayment();
   }, []);
@@ -32,4 +31,5 @@ const Verify = () => {
     </div>
   );
 };
+
 export default Verify;
