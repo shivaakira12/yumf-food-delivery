@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Verify from "../../frontend/src/pages/VerifyOrder/Verify";
 const App = () => {
-  const url = "http://localhost:4000";
+  const url = "https://yumf-food-delivery-backend.onrender.com";
   return (
     <div>
       <ToastContainer />
