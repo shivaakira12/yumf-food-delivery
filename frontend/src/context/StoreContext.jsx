@@ -43,7 +43,7 @@ const StoreContextProvider = (props) => {
   };
 
   const fetchFoodList = async () => {
-    const response = await axios.get("http://localhost:4000/api/food/list");
+    const response = await axios.get("https://yumf-food-delivery-backend.onrender.com");
     setFoodList(response.data.data);
   };
 
