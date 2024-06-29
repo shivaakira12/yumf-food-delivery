@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+
 export const StoreContext = createContext(null);
+
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const url = "https://yumf-food-delivery-backend.onrender.com";
@@ -14,23 +15,31 @@ const StoreContextProvider = (props) => {
       setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
     }
     if (token) {
-      await axios.post(
-        url + "/api/cart/add",
-        { itemId },
-        { headers: { token } }
-      );
+      await fetch(url + "/api/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify({ itemId }),
+      });
     }
   };
+
   const removeFromCart = async (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
     if (token) {
-      await axios.post(
-        url + "/api/cart/remove",
-        { itemId },
-        { headers: { token } }
-      );
+      await fetch(url + "/api/cart/remove", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify({ itemId }),
+      });
     }
   };
+
   const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const item in cartItems) {
@@ -43,18 +52,24 @@ const StoreContextProvider = (props) => {
   };
 
   const fetchFoodList = async () => {
-    const response = await axios.get("url+/api/food/list");
-    setFoodList(response.data.data);
+    const response = await fetch(url + "/api/food/list");
+    const data = await response.json();
+    setFoodList(data.data);
   };
 
   const loadCartData = async (token) => {
-    const response = await axios.post(
-      url + "/api/cart/get",
-      {},
-      { headers: { token } }
-    );
-    setCartItems(response.data.cartData);
+    const response = await fetch(url + "/api/cart/get", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+      },
+      body: JSON.stringify({}),
+    });
+    const data = await response.json();
+    setCartItems(data.cartData);
   };
+
   useEffect(() => {
     async function loadData() {
       await fetchFoodList();
@@ -65,6 +80,7 @@ const StoreContextProvider = (props) => {
     }
     loadData();
   }, []);
+
   const contextValue = {
     food_list,
     addToCart,
@@ -83,4 +99,5 @@ const StoreContextProvider = (props) => {
     </StoreContext.Provider>
   );
 };
+
 export default StoreContextProvider;
