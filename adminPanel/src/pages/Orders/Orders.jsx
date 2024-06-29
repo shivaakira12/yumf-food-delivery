@@ -1,40 +1,62 @@
 import React, { useEffect, useState } from "react";
 import "./Orders.css";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { assets } from "../../assets/assets";
+
 const Orders = ({ url }) => {
   const [orders, setOrders] = useState([]);
 
   const fetchAllOrders = async () => {
-    const response = await axios.get(url + "/api/order/list");
-    if (response.data.success) {
-      setOrders(response.data.data);
-      console.log(response.data.data);
-    } else {
-      toast.error("Error");
+    try {
+      const response = await fetch(url + "/api/order/list");
+      const responseData = await response.json();
+      if (responseData.success) {
+        setOrders(responseData.data);
+        console.log(responseData.data);
+      } else {
+        toast.error("Error");
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast.error("Error fetching orders");
     }
   };
 
   const statusHandler = async (event, orderId) => {
-    const response = await axios.post(url + "/api/order/status", {
-      orderId,
-      status: event.target.value,
-    });
-    if (response.data.success) {
-      await fetchAllOrders();
+    try {
+      const response = await fetch(url + "/api/order/status", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+          status: event.target.value,
+        }),
+      });
+      const responseData = await response.json();
+      if (responseData.success) {
+        await fetchAllOrders();
+      } else {
+        toast.error("Error updating status");
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast.error("Error updating status");
     }
   };
+
   useEffect(() => {
     fetchAllOrders();
   }, []);
+
   return (
     <div className="order add">
       <h3>Order Page</h3>
       <div className="order-list">
         {orders.map((order, index) => (
           <div key={index} className="order-item">
-            <img src={assets.parcel_icon}></img>
+            <img src={assets.parcel_icon} alt="Parcel"></img>
             <div>
               <p className="order-item-food">
                 {order.items.map((item, index) => {
@@ -69,7 +91,7 @@ const Orders = ({ url }) => {
               onChange={(event) => statusHandler(event, order._id)}
               value={order.status}
             >
-              <option value="Food Proccessing">Food Processing</option>
+              <option value="Food Processing">Food Processing</option>
               <option value="Out For Delivery">Out For Delivery</option>
               <option value="Delivered">Delivered</option>
             </select>
