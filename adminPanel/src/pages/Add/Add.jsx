@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { assets } from "../../assets/assets";
 import "./Add.css";
-import axios from "axios";
 import { toast } from "react-toastify";
+
 const Add = ({ url }) => {
   const [image, setImage] = useState(false);
   const [data, setData] = useState({
@@ -17,6 +17,7 @@ const Add = ({ url }) => {
     const value = event.target.value;
     setData((data) => ({ ...data, [name]: value }));
   };
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     const formdata = new FormData();
@@ -25,20 +26,33 @@ const Add = ({ url }) => {
     formdata.append("price", Number(data.price));
     formdata.append("category", data.category);
     formdata.append("image", image);
-    const response = await axios.post(`${url}/api/food/add`, formdata);
-    if (response.data.success) {
-      setData({
-        name: "",
-        description: "",
-        price: "",
-        category: "Salad",
+
+    try {
+      const response = await fetch(`${url}/api/food/add`, {
+        method: "POST",
+        body: formdata,
       });
-      setImage(false);
-      toast.success(response.data.message);
-    } else {
-      toast.error(response.data.message);
+
+      const responseData = await response.json();
+
+      if (responseData.success) {
+        setData({
+          name: "",
+          description: "",
+          price: "",
+          category: "Salad",
+        });
+        setImage(false);
+        toast.success(responseData.message);
+      } else {
+        toast.error(responseData.message);
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
+      toast.error("Error adding product");
     }
   };
+
   return (
     <div className="add">
       <form className="flex-col" onSubmit={onSubmitHandler}>
@@ -47,6 +61,7 @@ const Add = ({ url }) => {
           <label htmlFor="image">
             <img
               src={image ? URL.createObjectURL(image) : assets.upload_area}
+              alt="Upload"
             ></img>
           </label>
           <input
