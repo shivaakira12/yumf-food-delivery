@@ -1,25 +1,36 @@
-import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 import "./MyOrders.css";
+
 const MyOrders = () => {
   const { url, token } = useContext(StoreContext);
   const [data, setData] = useState([]);
+
   const fetchOrders = async () => {
-    const response = await axios.post(
-      url + "/api/order/userorders",
-      {},
-      { headers: { token } }
-    );
-    setData(response.data.data);
-    console.log(response.data.data);
+    try {
+      const response = await fetch(url + "/api/order/userorders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: token,
+        },
+        body: JSON.stringify({}),
+      });
+      const responseData = await response.json();
+      setData(responseData.data);
+      console.log(responseData.data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
   };
+
   useEffect(() => {
     if (token) {
       fetchOrders();
     }
   }, [token]);
+
   return (
     <div className="my-orders">
       <h2>My Orders</h2>
@@ -27,13 +38,13 @@ const MyOrders = () => {
         {data.map((order, index) => {
           return (
             <div key={index} className="my-orders-order">
-              <img src={assets.parcel_icon}></img>
+              <img src={assets.parcel_icon} alt="Parcel Icon"></img>
               <p>
                 {order.items.map((item, index) => {
                   if (index === order.items.length - 1) {
                     return item.name + " x " + item.quantity;
                   } else {
-                    return item.name + " x " + item.quantity + ",";
+                    return item.name + " x " + item.quantity + ", ";
                   }
                 })}
               </p>
